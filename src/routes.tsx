@@ -23,6 +23,12 @@ export const appRoutes: AppRoute[] = [
     element: <User />,
     nav: true,
   },
+    {
+    path: "/products",
+    label: "Products",
+    element: <User />,
+    nav: true,
+  },
   {
     path: "*",
     element: <NotFound />,
