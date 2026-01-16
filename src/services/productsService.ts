@@ -1,4 +1,3 @@
-// product.api.ts
 import { apiClient } from "../lib/apiClient";
 
 export type ProductRespond = {
@@ -26,7 +25,7 @@ export async function fetchAllProduct(): Promise<ProductRespond[]> {
 }
 
 export async function fetchProductByID(
-  id: string
+  id: string | number
 ): Promise<ProductRespond> {
   const { data } = await apiClient.get<ProductRespond>(
     `/api/products/${id}`
@@ -45,7 +44,7 @@ export async function createProduct(
 }
 
 export async function updateProduct(
-  id: string,
+  id: string | number,
   payload: UpdateProductPayload
 ): Promise<ProductRespond> {
   const { data } = await apiClient.put<ProductRespond>(
@@ -55,6 +54,6 @@ export async function updateProduct(
   return data;
 }
 
-export async function deleteProduct(id: string): Promise<void> {
+export async function deleteProduct(id: number): Promise<void> {
   await apiClient.delete(`/api/products/${id}`);
 }

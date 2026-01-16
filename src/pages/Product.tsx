@@ -6,21 +6,22 @@ import {
   updateProduct,
   deleteProduct,
 } from "@/services/productsService";
-import type { ProductRespond  } from "@/services/productsService";
+import type { ProductRespond } from "@/services/productsService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type Mode = "list" | "create" | "edit" | "view";
 
 function Product() {
-  const [products, setProducts] = useState<ProductRespond []>([]);
-  const [selectedProduct, setSelectedProduct] = useState<ProductRespond  | null>(null);
+  const [products, setProducts] = useState<ProductRespond[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<ProductRespond | null>(
+    null
+  );
   const [mode, setMode] = useState<Mode>("list");
 
   const [name, setName] = useState("");
-  const [price, setPrice] = useState<number>(0);
+  const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,13 +38,17 @@ function Product() {
     }
   };
 
-  const loadProductById = async (id: string) => {
+  const loadProductById = async (id: number) => {
     try {
       setLoading(true);
       setError(null);
       const data = await fetchProductByID(id);
+
       setSelectedProduct(data);
       setName(data.name);
+      setPrice(String(data.price));
+      setDescription(data.description);
+
       setMode("view");
     } catch {
       setError("Failed to fetch product");
@@ -54,23 +59,29 @@ function Product() {
 
   const handleCreate = async () => {
     if (!name.trim()) return;
-    await createProduct({ name, price, description });
+    await createProduct({
+      name,
+      price: Number(price),
+      description,
+    });
     setName("");
-    setPrice(0);
-    setDescription("");
     setMode("list");
     loadProducts();
   };
 
   const handleUpdate = async () => {
     if (!selectedProduct) return;
-    await updateProduct(selectedProduct.id, { name });
+    await updateProduct(selectedProduct.id, {
+      name,
+      price: Number(price),
+      description,
+    });
     setMode("list");
     setSelectedProduct(null);
     loadProducts();
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     await deleteProduct(id);
     loadProducts();
   };
@@ -78,6 +89,8 @@ function Product() {
   const resetState = () => {
     setSelectedProduct(null);
     setName("");
+    setPrice("");
+    setDescription("");
     setMode("list");
   };
 
@@ -95,12 +108,11 @@ function Product() {
 
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-semibold">User Management</h1>
+      <h1 className="text-2xl font-semibold">Product Management</h1>
 
       {mode === "list" && (
         <>
-          <Button onClick={() => setMode("create")}>Create User</Button>
-
+          <Button onClick={() => setMode("create")}>Create Product</Button>
           <div className="space-y-3">
             {products.map((product) => (
               <div
@@ -114,7 +126,6 @@ function Product() {
                   <p>ID: {product.id}</p>
                   <p>Name: {product.name}</p>
                   <p>Price: {product.price}</p>
-                  <p>Description: {product.description}</p>
                 </div>
 
                 <div className="flex gap-2">
@@ -123,6 +134,8 @@ function Product() {
                     onClick={() => {
                       setSelectedProduct(product);
                       setName(product.name);
+                      setPrice(String(product.price));
+                      setDescription(product.description);
                       setMode("edit");
                     }}
                   >
@@ -144,13 +157,26 @@ function Product() {
       {(mode === "create" || mode === "edit") && (
         <div className="space-y-4 rounded-lg border p-4">
           <h2 className="text-xl font-semibold">
-            {mode === "create" ? "Create User" : "Edit User"}
+            {mode === "create" ? "Create Product" : "Edit Product"}
           </h2>
 
           <Input
-            placeholder="User name"
+            placeholder="Product name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+          />
+
+          <Input
+            type="number"
+            placeholder="Price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+
+          <Input
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
 
           <div className="flex gap-2">
@@ -169,6 +195,8 @@ function Product() {
           <h2 className="text-xl font-semibold">Product Detail</h2>
           <p>ID: {selectedProduct.id}</p>
           <p>Name: {selectedProduct.name}</p>
+          <p>Price: {selectedProduct.price}</p>
+          <p>Description: {selectedProduct.description}</p>
 
           <Button onClick={resetState}>Back</Button>
         </div>
