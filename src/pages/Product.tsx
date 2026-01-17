@@ -6,9 +6,10 @@ import {
   updateProduct,
   deleteProduct,
 } from "@/services/productsService";
-import type { ProductRespond } from "@/services/productsService";
+import type { ProductRespond } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { isPositiveInteger, preventInvalidNumberKey } from "@/utils/numberInput";
 
 type Mode = "list" | "create" | "edit" | "view";
 
@@ -167,10 +168,16 @@ function Product() {
           />
 
           <Input
-            type="number"
+            type="text"
+            inputMode="numeric"
             placeholder="Price"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => {
+              if (isPositiveInteger(e.target.value)) {
+                setPrice(e.target.value);
+              }
+            }}
+            onKeyDown={preventInvalidNumberKey}
           />
 
           <Input

@@ -1,23 +1,5 @@
 import { apiClient } from "../lib/apiClient";
-
-export type ProductRespond = {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-};
-
-export type CreateProductPayload = {
-  name: string;
-  price: number;
-  description: string;
-};
-
-export type UpdateProductPayload = {
-  name?: string;
-  price?: number;
-  description?: string;
-};
+import type { ProductPayload, ProductRespond } from "../types";
 
 export async function fetchAllProduct(): Promise<ProductRespond[]> {
   const { data } = await apiClient.get<ProductRespond[]>("/api/products");
@@ -34,7 +16,7 @@ export async function fetchProductByID(
 }
 
 export async function createProduct(
-  payload: CreateProductPayload
+  payload: ProductPayload
 ): Promise<ProductRespond> {
   const { data } = await apiClient.post<ProductRespond>(
     "/api/products",
@@ -45,7 +27,7 @@ export async function createProduct(
 
 export async function updateProduct(
   id: string | number,
-  payload: UpdateProductPayload
+  payload: ProductPayload
 ): Promise<ProductRespond> {
   const { data } = await apiClient.put<ProductRespond>(
     `/api/products/${id}`,
