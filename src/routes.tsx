@@ -2,6 +2,7 @@ import Home from "./pages/Home";
 import User from "./pages/User";
 import NotFound from "./pages/NotFound";
 import type { JSX } from "react";
+import Product from "./pages/Product";
 
 export type AppRoute = {
   path: string;
@@ -21,6 +22,12 @@ export const appRoutes: AppRoute[] = [
     path: "/users",
     label: "User",
     element: <User />,
+    nav: true,
+  },
+    {
+    path: "/products",
+    label: "Products",
+    element: <Product />,
     nav: true,
   },
   {

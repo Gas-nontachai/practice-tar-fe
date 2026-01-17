@@ -1,17 +1,5 @@
 import { apiClient } from "../lib/apiClient";
-
-export type UserRespond = {
-  id: number;
-  name: string;
-};
-
-export type CreateUserPayload = {
-  name: string;
-};
-
-export type UpdateUserPayload = {
-  name?: string;
-};
+import type { UserPayload, UserRespond } from "../types";
 
 export async function fetchAllUser(): Promise<UserRespond[]> {
   const { data } = await apiClient.get<UserRespond[]>("/api/users");
@@ -24,7 +12,7 @@ export async function fetchUserByID(id: number): Promise<UserRespond> {
 }
 
 export async function createUser(
-  payload: CreateUserPayload
+  payload: UserPayload
 ): Promise<UserRespond> {
   const { data } = await apiClient.post<UserRespond>(
     "/api/users",
@@ -35,7 +23,7 @@ export async function createUser(
 
 export async function updateUser(
   id: number,
-  payload: UpdateUserPayload
+  payload: UserPayload
 ): Promise<UserRespond> {
   const { data } = await apiClient.put<UserRespond>(
     `/api/users/${id}`,
