@@ -8,6 +8,7 @@ import {
 } from "@/services/productsService";
 import type { ProductRespond } from "@/types";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { isPositiveInteger, preventInvalidNumberKey } from "@/utils/numberInput";
@@ -19,6 +20,7 @@ function Product() {
   const [selectedProduct, setSelectedProduct] = useState<ProductRespond | null>(
     null
   );
+  const [deleteTarget, setDeleteTarget] = useState<ProductRespond | null>(null);
   const [mode, setMode] = useState<Mode>("list");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
@@ -86,8 +88,10 @@ function Product() {
     loadProducts();
   };
 
-  const handleDelete = async (id: number) => {
-    await deleteProduct(id);
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    await deleteProduct(deleteTarget.id);
+    setDeleteTarget(null);
     loadProducts();
   };
 
@@ -159,7 +163,7 @@ function Product() {
                   </Button>
                   <Button
                     variant="destructive"
-                    onClick={() => handleDelete(product.id)}
+                    onClick={() => setDeleteTarget(product)}
                   >
                     Delete
                   </Button>
@@ -232,6 +236,19 @@ function Product() {
           <Button onClick={resetState}>Back</Button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete product?"
+        description={
+          deleteTarget
+            ? `This will permanently delete ${deleteTarget.name}.`
+            : undefined
+        }
+        confirmLabel="Delete"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+      />
     </section>
   );
 }

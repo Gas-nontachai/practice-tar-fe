@@ -8,6 +8,7 @@ import {
 } from "@/services/userService";
 import type { UserRespond } from "@/types";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 
@@ -16,6 +17,7 @@ type Mode = "list" | "create" | "edit" | "view";
 function User() {
   const [users, setUsers] = useState<UserRespond[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserRespond | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserRespond | null>(null);
   const [mode, setMode] = useState<Mode>("list");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
@@ -69,8 +71,10 @@ function User() {
     loadUsers();
   };
 
-  const handleDelete = async (id: number) => {
-    await deleteUser(id);
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    await deleteUser(deleteTarget.id);
+    setDeleteTarget(null);
     loadUsers();
   };
 
@@ -138,7 +142,7 @@ function User() {
                   </Button>
                   <Button
                     variant="destructive"
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() => setDeleteTarget(user)}
                   >
                     Delete
                   </Button>
@@ -190,6 +194,19 @@ function User() {
           <Button onClick={resetState}>Back</Button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete user?"
+        description={
+          deleteTarget
+            ? `This will permanently delete ${deleteTarget.name}.`
+            : undefined
+        }
+        confirmLabel="Delete"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+      />
     </section>
   );
 }
