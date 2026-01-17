@@ -6,9 +6,10 @@ import {
   updateUser,
   deleteUser,
 } from "@/services/userService";
-import type { UserRespond } from "@/services/userService";
+import type { UserRespond } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Pagination from "@/components/ui/pagination";
 
 type Mode = "list" | "create" | "edit" | "view";
 
@@ -16,6 +17,8 @@ function User() {
   const [users, setUsers] = useState<UserRespond[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserRespond | null>(null);
   const [mode, setMode] = useState<Mode>("list");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
 
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,6 +30,7 @@ function User() {
       setError(null);
       const data = await fetchAllUser();
       setUsers(data);
+      setCurrentPage(1);
     } catch {
       setError("Failed to fetch users");
     } finally {
@@ -80,6 +84,17 @@ function User() {
     loadUsers();
   }, []);
 
+  const totalPages = Math.max(1, Math.ceil(users.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const pagedUsers = users.slice(startIndex, startIndex + pageSize);
+  const startCount = users.length === 0 ? 0 : startIndex + 1;
+  const endCount = Math.min(startIndex + pageSize, users.length);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
+
   if (loading) {
     return <h1 className="text-xl font-semibold">Loading...</h1>;
   }
@@ -97,7 +112,7 @@ function User() {
           <Button onClick={() => setMode("create")}>Create User</Button>
 
           <div className="space-y-3">
-            {users.map((user) => (
+            {pagedUsers.map((user) => (
               <div
                 key={user.id}
                 className="flex items-center justify-between rounded-lg border p-4"
@@ -131,6 +146,15 @@ function User() {
               </div>
             ))}
           </div>
+
+          <Pagination
+            currentPage={safePage}
+            totalPages={totalPages}
+            totalCount={users.length}
+            startCount={startCount}
+            endCount={endCount}
+            onPageChange={setCurrentPage}
+          />
         </>
       )}
 

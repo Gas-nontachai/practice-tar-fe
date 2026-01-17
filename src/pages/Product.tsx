@@ -9,6 +9,7 @@ import {
 import type { ProductRespond } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Pagination from "@/components/ui/pagination";
 import { isPositiveInteger, preventInvalidNumberKey } from "@/utils/numberInput";
 
 type Mode = "list" | "create" | "edit" | "view";
@@ -19,6 +20,8 @@ function Product() {
     null
   );
   const [mode, setMode] = useState<Mode>("list");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -32,6 +35,7 @@ function Product() {
       setError(null);
       const data = await fetchAllProduct();
       setProducts(data);
+      setCurrentPage(1);
     } catch {
       setError("Failed to fetch products");
     } finally {
@@ -99,6 +103,17 @@ function Product() {
     loadProducts();
   }, []);
 
+  const totalPages = Math.max(1, Math.ceil(products.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const pagedProducts = products.slice(startIndex, startIndex + pageSize);
+  const startCount = products.length === 0 ? 0 : startIndex + 1;
+  const endCount = Math.min(startIndex + pageSize, products.length);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
+
   if (loading) {
     return <h1 className="text-xl font-semibold">Loading...</h1>;
   }
@@ -115,7 +130,7 @@ function Product() {
         <>
           <Button onClick={() => setMode("create")}>Create Product</Button>
           <div className="space-y-3">
-            {products.map((product) => (
+            {pagedProducts.map((product) => (
               <div
                 key={product.id}
                 className="flex items-center justify-between rounded-lg border p-4"
@@ -152,6 +167,15 @@ function Product() {
               </div>
             ))}
           </div>
+
+          <Pagination
+            currentPage={safePage}
+            totalPages={totalPages}
+            totalCount={products.length}
+            startCount={startCount}
+            endCount={endCount}
+            onPageChange={setCurrentPage}
+          />
         </>
       )}
 
