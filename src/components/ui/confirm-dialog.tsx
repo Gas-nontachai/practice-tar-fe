@@ -75,11 +75,7 @@ function ConfirmDialog({
         </div>
 
         <div className="mt-6 flex justify-end gap-2">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={loading}
-          >
+          <Button variant="outline" onClick={onCancel} disabled={loading}>
             {cancelLabel}
           </Button>
           <Button

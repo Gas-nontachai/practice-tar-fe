@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   fetchAllProduct,
-  fetchProductByID,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -11,14 +11,18 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
-import { isPositiveInteger, preventInvalidNumberKey } from "@/utils/numberInput";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import {
+  isPositiveInteger,
+  preventInvalidNumberKey,
+} from "@/utils/numberInput";
 
-type Mode = "list" | "create" | "edit" | "view";
+type Mode = "list" | "create" | "edit";
 
 function Product() {
   const [products, setProducts] = useState<ProductRespond[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<ProductRespond | null>(
-    null
+    null,
   );
   const [deleteTarget, setDeleteTarget] = useState<ProductRespond | null>(null);
   const [mode, setMode] = useState<Mode>("list");
@@ -28,6 +32,7 @@ function Product() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,25 +45,6 @@ function Product() {
       setCurrentPage(1);
     } catch {
       setError("Failed to fetch products");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadProductById = async (id: number) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchProductByID(id);
-
-      setSelectedProduct(data);
-      setName(data.name);
-      setPrice(String(data.price));
-      setDescription(data.description);
-
-      setMode("view");
-    } catch {
-      setError("Failed to fetch product");
     } finally {
       setLoading(false);
     }
@@ -107,16 +93,26 @@ function Product() {
     loadProducts();
   }, []);
 
-  const totalPages = Math.max(1, Math.ceil(products.length / pageSize));
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(search.trim().toLowerCase()),
+  );
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
   const startIndex = (safePage - 1) * pageSize;
-  const pagedProducts = products.slice(startIndex, startIndex + pageSize);
-  const startCount = products.length === 0 ? 0 : startIndex + 1;
-  const endCount = Math.min(startIndex + pageSize, products.length);
+  const pagedProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + pageSize,
+  );
+  const startCount = filteredProducts.length === 0 ? 0 : startIndex + 1;
+  const endCount = Math.min(startIndex + pageSize, filteredProducts.length);
 
   useEffect(() => {
     setCurrentPage((page) => Math.min(page, totalPages));
   }, [totalPages]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
   if (loading) {
     return <h1 className="text-xl font-semibold">Loading...</h1>;
@@ -128,54 +124,73 @@ function Product() {
 
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-semibold">Product Management</h1>
-
       {mode === "list" && (
         <>
-          <Button onClick={() => setMode("create")}>Create Product</Button>
-          <div className="space-y-3">
-            {pagedProducts.map((product) => (
-              <div
-                key={product.id}
-                className="flex items-center justify-between rounded-lg border p-4"
-              >
-                <div
-                  className="cursor-pointer"
-                  onClick={() => loadProductById(product.id)}
-                >
-                  <p>ID: {product.id}</p>
-                  <p>Name: {product.name}</p>
-                  <p>Price: {product.price}</p>
-                </div>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">Product Management</h1>
+            <Button onClick={() => setMode("create")}>
+              <Plus className="mr-1 h-4 w-4" />
+              Create Product
+            </Button>
+          </div>
+          <div className="flex justify-start">
+            <Input
+              containerClassName="max-w-sm"
+              placeholder="Search products"
+              suffix={<Search className="h-4 w-4" />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setName(product.name);
-                      setPrice(String(product.price));
-                      setDescription(product.description);
-                      setMode("edit");
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => setDeleteTarget(product)}
-                  >
-                    Delete
-                  </Button>
-                </div>
+          <div className="space-y-3">
+            {pagedProducts.length === 0 ? (
+              <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                No products found.
               </div>
-            ))}
+            ) : (
+              pagedProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between rounded-lg border p-4"
+                >
+                  <Link className="flex-1" to={`/products/${product.id}`}>
+                    <p>ID: {product.id}</p>
+                    <p>Name: {product.name}</p>
+                    <p>Price: {product.price} $</p>
+                  </Link>
+
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setName(product.name);
+                        setPrice(String(product.price));
+                        setDescription(product.description);
+                        setMode("edit");
+                      }}
+                    >
+                      <Pencil className="mr-1 h-4 w-4" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => setDeleteTarget(product)}
+                    >
+                      <Trash2 className="mr-1 h-4 w-4" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <Pagination
             currentPage={safePage}
             totalPages={totalPages}
-            totalCount={products.length}
+            totalCount={filteredProducts.length}
             startCount={startCount}
             endCount={endCount}
             onPageChange={setCurrentPage}
@@ -216,24 +231,17 @@ function Product() {
 
           <div className="flex gap-2">
             <Button onClick={mode === "create" ? handleCreate : handleUpdate}>
+              {mode === "create" ? (
+                <Plus className="mr-1 h-4 w-4" />
+              ) : (
+                <Pencil className="mr-1 h-4 w-4" />
+              )}
               {mode === "create" ? "Create" : "Update"}
             </Button>
             <Button variant="outline" onClick={resetState}>
               Cancel
             </Button>
           </div>
-        </div>
-      )}
-
-      {mode === "view" && selectedProduct && (
-        <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
-          <h2 className="text-xl font-semibold">Product Detail</h2>
-          <p>ID: {selectedProduct.id}</p>
-          <p>Name: {selectedProduct.name}</p>
-          <p>Price: {selectedProduct.price}</p>
-          <p>Description: {selectedProduct.description}</p>
-
-          <Button onClick={resetState}>Back</Button>
         </div>
       )}
 

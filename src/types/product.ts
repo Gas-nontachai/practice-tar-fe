@@ -5,4 +5,4 @@ export type ProductRespond = {
   description: string;
 };
 
-export type ProductPayload = Omit<ProductRespond, "id">; 
+export type ProductPayload = Omit<ProductRespond, "id">;
