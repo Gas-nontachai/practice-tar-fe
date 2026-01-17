@@ -11,23 +11,18 @@ export async function fetchUserByID(id: number): Promise<UserRespond> {
   return data;
 }
 
-export async function createUser(
-  payload: UserPayload
-): Promise<UserRespond> {
-  const { data } = await apiClient.post<UserRespond>(
-    "/api/users",
-    payload
-  );
+export async function createUser(payload: UserPayload): Promise<UserRespond> {
+  const { data } = await apiClient.post<UserRespond>("/api/users", payload);
   return data;
 }
 
 export async function updateUser(
   id: number,
-  payload: UserPayload
+  payload: UserPayload,
 ): Promise<UserRespond> {
   const { data } = await apiClient.put<UserRespond>(
     `/api/users/${id}`,
-    payload
+    payload,
   );
   return data;
 }

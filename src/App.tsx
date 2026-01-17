@@ -4,7 +4,7 @@ import { appRoutes } from "./routes";
 function App() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     [
-      "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+      "inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       isActive
         ? "bg-primary text-primary-foreground"
         : "text-foreground/70 hover:bg-accent hover:text-foreground",
@@ -23,6 +23,7 @@ function App() {
                 end={route.path === "/"}
                 className={linkClass}
               >
+                {route.icon && <span className="shrink-0">{route.icon}</span>}
                 {route.label}
               </NavLink>
             ))}

@@ -7,31 +7,29 @@ export async function fetchAllProduct(): Promise<ProductRespond[]> {
 }
 
 export async function fetchProductByID(
-  id: string | number
+  id: string | number,
 ): Promise<ProductRespond> {
-  const { data } = await apiClient.get<ProductRespond>(
-    `/api/products/${id}`
-  );
+  const { data } = await apiClient.get<ProductRespond>(`/api/products/${id}`);
   return data;
 }
 
 export async function createProduct(
-  payload: ProductPayload
+  payload: ProductPayload,
 ): Promise<ProductRespond> {
   const { data } = await apiClient.post<ProductRespond>(
     "/api/products",
-    payload
+    payload,
   );
   return data;
 }
 
 export async function updateProduct(
   id: string | number,
-  payload: ProductPayload
+  payload: ProductPayload,
 ): Promise<ProductRespond> {
   const { data } = await apiClient.put<ProductRespond>(
     `/api/products/${id}`,
-    payload
+    payload,
   );
   return data;
 }
