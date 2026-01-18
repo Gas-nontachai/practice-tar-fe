@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
-import { Pencil, Plus, Search, Trash2, UserCog  } from "lucide-react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 
 type Mode = "list" | "create" | "edit";
 
