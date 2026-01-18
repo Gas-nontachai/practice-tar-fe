@@ -6,6 +6,8 @@ import Product from "./pages/Product";
 import UserDetail from "./pages/UserDetail";
 import ProductDetail from "./pages/ProductDetail";
 import { Home as HomeIcon, Package, Users } from "lucide-react";
+import Role from "./pages/Role";
+import RoleDetail from "./pages/RoleDetail";
 
 export type AppRoute = {
   path: string;
@@ -33,6 +35,17 @@ export const appRoutes: AppRoute[] = [
   {
     path: "/users/:id",
     element: <UserDetail />,
+  },
+  {
+    path: "/roles",
+    label: "Role",
+    icon: <Users className="h-4 w-4" />,
+    element: <Role />,
+    nav: true,
+  },
+  {
+    path: "/roles/:id",
+    element: <RoleDetail />,
   },
   {
     path: "/products",
