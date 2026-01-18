@@ -78,7 +78,7 @@ function RoleDetail() {
         <CardContent className="space-y-2">
           <p>ID: {role.id}</p>
           <p>Name: {role.name}</p>
-          <p>Description: {role.description}</p>
+          <p>Description: {role.description || "N/A"}</p>
         </CardContent>
       </Card>
     </section>

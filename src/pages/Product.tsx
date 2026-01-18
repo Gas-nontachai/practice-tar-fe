@@ -8,7 +8,7 @@ import {
 } from "@/services/productsService";
 import type { ProductRespond } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DialogAlert } from "@/components/ui/dialog-alert";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
@@ -35,6 +35,8 @@ function Product() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const loadProducts = async () => {
     try {
@@ -51,7 +53,16 @@ function Product() {
   };
 
   const handleCreate = async () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      setAlertMessage("Product name is required");
+      setAlertOpen(true);
+      return;
+    }
+    if (!price.trim()) {
+      setAlertMessage("Product price is required");
+      setAlertOpen(true);
+      return;
+    }
     await createProduct({
       name,
       price: Number(price),
@@ -158,6 +169,7 @@ function Product() {
                     <p>ID: {product.id}</p>
                     <p>Name: {product.name}</p>
                     <p>Price: {product.price} $</p>
+                    <p>Description: {product.description}</p>
                   </Link>
 
                   <div className="flex gap-2">
@@ -245,7 +257,7 @@ function Product() {
         </div>
       )}
 
-      <ConfirmDialog
+      <DialogAlert
         open={deleteTarget !== null}
         title="Delete product?"
         description={
@@ -256,6 +268,14 @@ function Product() {
         confirmLabel="Delete"
         onCancel={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
+      />
+      <DialogAlert
+        open={alertOpen}
+        title="Validation error"
+        description={alertMessage}
+        mode="alert"
+        onCancel={() => setAlertOpen(false)}
+        onConfirm={() => setAlertOpen(false)}
       />
     </section>
   );

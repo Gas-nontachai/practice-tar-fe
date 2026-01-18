@@ -6,20 +6,13 @@ export async function fetchAllRole(): Promise<RoleRespond[]> {
   return data;
 }
 
-export async function fetchRoleByID(
-  id: string | number,
-): Promise<RoleRespond> {
+export async function fetchRoleByID(id: string | number): Promise<RoleRespond> {
   const { data } = await apiClient.get<RoleRespond>(`/api/roles/${id}`);
   return data;
 }
 
-export async function createRole(
-  payload: RolePayload,
-): Promise<RoleRespond> {
-  const { data } = await apiClient.post<RoleRespond>(
-    "/api/roles",
-    payload,
-  );
+export async function createRole(payload: RolePayload): Promise<RoleRespond> {
+  const { data } = await apiClient.post<RoleRespond>("/api/roles", payload);
   return data;
 }
 

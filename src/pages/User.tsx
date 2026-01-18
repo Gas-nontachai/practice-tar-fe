@@ -8,7 +8,7 @@ import {
 } from "@/services/userService";
 import type { UserRespond } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DialogAlert } from "@/components/ui/dialog-alert";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
@@ -27,6 +27,8 @@ function User() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const loadUsers = async () => {
     try {
@@ -43,7 +45,11 @@ function User() {
   };
 
   const handleCreate = async () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      setAlertMessage("User name is required");
+      setAlertOpen(true);
+      return;
+    }
     await createUser({ name });
     setName("");
     setMode("list");
@@ -203,7 +209,7 @@ function User() {
         </div>
       )}
 
-      <ConfirmDialog
+      <DialogAlert
         open={deleteTarget !== null}
         title="Delete user?"
         description={
@@ -214,6 +220,14 @@ function User() {
         confirmLabel="Delete"
         onCancel={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
+      />
+      <DialogAlert
+        open={alertOpen}
+        title="Validation error"
+        description={alertMessage}
+        mode="alert"
+        onCancel={() => setAlertOpen(false)}
+        onConfirm={() => setAlertOpen(false)}
       />
     </section>
   );

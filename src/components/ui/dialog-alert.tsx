@@ -3,31 +3,37 @@ import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 
-type ConfirmDialogProps = {
+type DialogAlertProps = {
   open: boolean;
   title: string;
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
   confirmVariant?: "default" | "destructive";
+  mode?: "confirm" | "alert";
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
 };
 
-function ConfirmDialog({
+function DialogAlert({
   open,
   title,
   description,
-  confirmLabel = "Confirm",
+  confirmLabel,
   cancelLabel = "Cancel",
-  confirmVariant = "destructive",
+  confirmVariant,
+  mode = "confirm",
   onConfirm,
   onCancel,
   loading = false,
-}: ConfirmDialogProps) {
+}: DialogAlertProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const resolvedConfirmLabel =
+    confirmLabel ?? (mode === "alert" ? "OK" : "Confirm");
+  const resolvedConfirmVariant =
+    confirmVariant ?? (mode === "alert" ? "default" : "destructive");
 
   useEffect(() => {
     if (!open) return;
@@ -75,15 +81,17 @@ function ConfirmDialog({
         </div>
 
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={onCancel} disabled={loading}>
-            {cancelLabel}
-          </Button>
+          {mode === "confirm" ? (
+            <Button variant="outline" onClick={onCancel} disabled={loading}>
+              {cancelLabel}
+            </Button>
+          ) : null}
           <Button
-            variant={confirmVariant}
+            variant={resolvedConfirmVariant}
             onClick={onConfirm}
             disabled={loading}
           >
-            {loading ? "Please wait..." : confirmLabel}
+            {loading ? "Please wait..." : resolvedConfirmLabel}
           </Button>
         </div>
       </div>
@@ -92,4 +100,4 @@ function ConfirmDialog({
   );
 }
 
-export { ConfirmDialog };
+export { DialogAlert };

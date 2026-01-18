@@ -8,7 +8,7 @@ import {
 } from "@/services/roleService";
 import type { RoleRespond } from "@/types";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DialogAlert } from "@/components/ui/dialog-alert";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
@@ -17,9 +17,7 @@ type Mode = "list" | "create" | "edit";
 
 function Role() {
   const [roles, setRoles] = useState<RoleRespond[]>([]);
-  const [selectedRole, setSelectedRole] = useState<RoleRespond | null>(
-    null,
-  );
+  const [selectedRole, setSelectedRole] = useState<RoleRespond | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<RoleRespond | null>(null);
   const [mode, setMode] = useState<Mode>("list");
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +28,8 @@ function Role() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const loadRoles = async () => {
     try {
@@ -46,7 +46,11 @@ function Role() {
   };
 
   const handleCreate = async () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      setAlertMessage("Role name is required");
+      setAlertOpen(true);
+      return;
+    }
     await createRole({
       name,
       description,
@@ -91,10 +95,7 @@ function Role() {
   const totalPages = Math.max(1, Math.ceil(filteredRoles.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
   const startIndex = (safePage - 1) * pageSize;
-  const pagedRoles = filteredRoles.slice(
-    startIndex,
-    startIndex + pageSize,
-  );
+  const pagedRoles = filteredRoles.slice(startIndex, startIndex + pageSize);
   const startCount = filteredRoles.length === 0 ? 0 : startIndex + 1;
   const endCount = Math.min(startIndex + pageSize, filteredRoles.length);
 
@@ -149,6 +150,7 @@ function Role() {
                   <Link className="flex-1" to={`/roles/${role.id}`}>
                     <p>ID: {role.id}</p>
                     <p>Name: {role.name}</p>
+                    <p>Description: {role.description}</p>
                   </Link>
 
                   <div className="flex gap-2">
@@ -157,7 +159,7 @@ function Role() {
                       onClick={() => {
                         setSelectedRole(role);
                         setName(role.name);
-                        setDescription(role.description);
+                        setDescription(role.description || "");
                         setMode("edit");
                       }}
                     >
@@ -222,7 +224,7 @@ function Role() {
         </div>
       )}
 
-      <ConfirmDialog
+      <DialogAlert
         open={deleteTarget !== null}
         title="Delete role?"
         description={
@@ -233,6 +235,14 @@ function Role() {
         confirmLabel="Delete"
         onCancel={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
+      />
+      <DialogAlert
+        open={alertOpen}
+        title="Validation error"
+        description={alertMessage}
+        mode="alert"
+        onCancel={() => setAlertOpen(false)}
+        onConfirm={() => setAlertOpen(false)}
       />
     </section>
   );
