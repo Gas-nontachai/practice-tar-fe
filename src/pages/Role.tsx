@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
-import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Pencil, Plus, Search, Trash2, UserCog  } from "lucide-react";
 
 type Mode = "list" | "create" | "edit";
 
@@ -149,6 +149,7 @@ function Role() {
                   <Link className="flex-1" to={`/roles/${role.id}`}>
                     <p>ID: {role.id}</p>
                     <p>Name: {role.name}</p>
+                    <p>Description: {role.description}</p>
                   </Link>
 
                   <div className="flex gap-2">

@@ -158,6 +158,7 @@ function Product() {
                     <p>ID: {product.id}</p>
                     <p>Name: {product.name}</p>
                     <p>Price: {product.price} $</p>
+                    <p>Description: {product.description}</p>
                   </Link>
 
                   <div className="flex gap-2">
