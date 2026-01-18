@@ -12,6 +12,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { normalizeText } from "@/utils/normalizeText";
 import {
   isPositiveInteger,
   preventInvalidNumberKey,
@@ -55,7 +56,7 @@ function Product() {
     await createProduct({
       name,
       price: Number(price),
-      description,
+      description: normalizeText(description),
     });
     setName("");
     setMode("list");
@@ -67,7 +68,7 @@ function Product() {
     await updateProduct(selectedProduct.id, {
       name,
       price: Number(price),
-      description,
+      description: normalizeText(description),
     });
     setMode("list");
     setSelectedProduct(null);

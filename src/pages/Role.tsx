@@ -12,6 +12,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { normalizeText } from "@/utils/normalizeText";
 
 type Mode = "list" | "create" | "edit";
 
@@ -49,7 +50,7 @@ function Role() {
     if (!name.trim()) return;
     await createRole({
       name,
-      description,
+      description: normalizeText(description),
     });
     setName("");
     setMode("list");
@@ -60,7 +61,7 @@ function Role() {
     if (!selectedRole) return;
     await updateRole(selectedRole.id, {
       name,
-      description,
+      description: normalizeText(description),
     });
     setMode("list");
     setSelectedRole(null);
