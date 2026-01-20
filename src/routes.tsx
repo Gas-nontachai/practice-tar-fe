@@ -5,7 +5,8 @@ import type { JSX } from "react";
 import Product from "./pages/Product";
 import UserDetail from "./pages/UserDetail";
 import ProductDetail from "./pages/ProductDetail";
-import { Home as HomeIcon, Package, Users, UserCog } from "lucide-react";
+import ExampleFile from "./pages/ExampleFile";
+import { Home as HomeIcon, Package, Users, UserCog, File } from "lucide-react";
 import Role from "./pages/Role";
 import RoleDetail from "./pages/RoleDetail";
 
@@ -57,6 +58,13 @@ export const appRoutes: AppRoute[] = [
   {
     path: "/products/:id",
     element: <ProductDetail />,
+  },
+  {
+    path: "/example-file",
+    label: "ExampleFile",
+    icon: <File className="h-4 w-4" />,
+    element: <ExampleFile />,
+    nav: true,
   },
   {
     path: "*",
