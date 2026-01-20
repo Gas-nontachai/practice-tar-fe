@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { type ChangeEvent } from "react";
+import type { UploadedFile } from "@/types/upload";
+
 import { Link } from "react-router-dom";
 import {
   fetchAllProduct,
@@ -9,6 +12,7 @@ import {
 import type { ProductRespond } from "@/types";
 import { Button } from "@/components/ui/button";
 import { DialogAlert } from "@/components/ui/dialog-alert";
+import { Image } from "@/components/ui/image";
 import { Input } from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
@@ -16,7 +20,9 @@ import {
   isPositiveInteger,
   preventInvalidNumberKey,
 } from "@/utils/numberInput";
-
+import { uploadSingle } from "@/services/uploads";
+import { trimmedPath } from "@/utils/trimmedPath";
+import { pathImg } from "@/utils/pathImg";
 type Mode = "list" | "create" | "edit";
 
 function Product() {
@@ -37,6 +43,8 @@ function Product() {
   const [error, setError] = useState<string | null>(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+
+  const [singleFile, setSingleFile] = useState<File | null>(null);
 
   const loadProducts = async () => {
     try {
@@ -63,10 +71,16 @@ function Product() {
       setAlertOpen(true);
       return;
     }
+    setError(null);
+    let uploaded: UploadedFile | null = null;
+    if (singleFile) {
+      uploaded = await uploadSingle(singleFile);
+    }
     await createProduct({
       name,
       price: Number(price),
       description,
+      img_path: uploaded ? trimmedPath(uploaded?.path || "") : undefined,
     });
     setName("");
     setMode("list");
@@ -75,10 +89,15 @@ function Product() {
 
   const handleUpdate = async () => {
     if (!selectedProduct) return;
+    let uploaded: UploadedFile | null = null;
+    if (singleFile) {
+      uploaded = await uploadSingle(singleFile);
+    }
     await updateProduct(selectedProduct.id, {
       name,
       price: Number(price),
       description,
+      img_path: uploaded ? trimmedPath(uploaded?.path || "") : undefined, 
     });
     setMode("list");
     setSelectedProduct(null);
@@ -98,6 +117,11 @@ function Product() {
     setPrice("");
     setDescription("");
     setMode("list");
+  };
+
+  const handleSingleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setSingleFile(file);
   };
 
   useEffect(() => {
@@ -166,10 +190,23 @@ function Product() {
                   className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <Link className="flex-1" to={`/products/${product.id}`}>
-                    <p>ID: {product.id}</p>
-                    <p>Name: {product.name}</p>
-                    <p>Price: {product.price} $</p>
-                    <p>Description: {product.description}</p>
+                    <div className="flex gap-5">
+                      <div>
+                        {product.img_path && (
+                          <Image
+                            src={pathImg(product.img_path)}
+                            alt={product.name}
+                            containerClassName="h-24 w-24"
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <p>ID: {product.id}</p>
+                        <p>Name: {product.name}</p>
+                        <p>Price: {product.price} $</p>
+                        <p>Description: {product.description}</p>
+                      </div>
+                    </div>
                   </Link>
 
                   <div className="flex gap-2">
@@ -239,6 +276,12 @@ function Product() {
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+
+          <Input
+            type="file"
+            onChange={handleSingleChange}
+            className="file:mr-4 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium"
           />
 
           <div className="flex gap-2">

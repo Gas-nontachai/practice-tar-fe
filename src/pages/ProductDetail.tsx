@@ -5,6 +5,8 @@ import type { ProductRespond } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
+import { pathImg } from "@/utils/pathImg";
+import { Image } from "@/components/ui/image";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -77,6 +79,16 @@ function ProductDetail() {
           <CardTitle>{product.name}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
+          {product.img_path && (
+            <div className="flex gap-3">
+              <span>Image: </span>
+              <Image
+                src={pathImg(product.img_path)}
+                alt={product.name}
+                containerClassName="w-30 h-30"
+              />
+            </div>
+          )}
           <p>ID: {product.id}</p>
           <p>Name: {product.name}</p>
           <p>Price: {product.price} $</p>

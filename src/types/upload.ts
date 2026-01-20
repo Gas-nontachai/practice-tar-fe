@@ -1,4 +1,4 @@
- export interface UploadedFile {
+export interface UploadedFile {
   filename: string;
   originalName: string;
   size: number;

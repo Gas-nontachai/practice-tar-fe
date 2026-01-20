@@ -12,7 +12,7 @@ export async function uploadSingle(file: File) {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
 
   return data.file;
