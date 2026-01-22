@@ -15,8 +15,7 @@ function ProductDetail() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const parsedId = Number(id);
-    if (!id || !Number.isInteger(parsedId) || parsedId <= 0) {
+    if (!id) {
       setError("Invalid product id");
       setProduct(null);
       return;
@@ -28,7 +27,7 @@ function ProductDetail() {
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchProductByID(parsedId);
+        const data = await fetchProductByID(id);
         if (isMounted) {
           setProduct(data);
         }

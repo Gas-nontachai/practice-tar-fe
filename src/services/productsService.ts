@@ -34,6 +34,6 @@ export async function updateProduct(
   return data;
 }
 
-export async function deleteProduct(id: number): Promise<void> {
+export async function deleteProduct(id: string): Promise<void> {
   await apiClient.delete(`/api/products/${id}`);
 }

@@ -27,6 +27,6 @@ export async function updateRole(
   return data;
 }
 
-export async function deleteRole(id: number): Promise<void> {
+export async function deleteRole(id: string): Promise<void> {
   await apiClient.delete(`/api/roles/${id}`);
 }

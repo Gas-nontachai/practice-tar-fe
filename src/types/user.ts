@@ -1,5 +1,5 @@
 export type UserRespond = {
-  id: number;
+  id: string;
   name: string;
 };
 

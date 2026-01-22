@@ -1,5 +1,5 @@
 export type RoleRespond = {
-  id: number;
+  id: string;
   name: string;
   description?: string;
 };

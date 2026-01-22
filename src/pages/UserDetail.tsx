@@ -13,8 +13,7 @@ function UserDetail() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const parsedId = Number(id);
-    if (!id || !Number.isInteger(parsedId) || parsedId <= 0) {
+    if (!id) {
       setError("Invalid user id");
       setUser(null);
       return;
@@ -26,7 +25,7 @@ function UserDetail() {
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchUserByID(parsedId);
+        const data = await fetchUserByID(id);
         if (isMounted) {
           setUser(data);
         }

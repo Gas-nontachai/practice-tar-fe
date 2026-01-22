@@ -6,7 +6,7 @@ export async function fetchAllUser(): Promise<UserRespond[]> {
   return data;
 }
 
-export async function fetchUserByID(id: number): Promise<UserRespond> {
+export async function fetchUserByID(id: string): Promise<UserRespond> {
   const { data } = await apiClient.get<UserRespond>(`/api/users/${id}`);
   return data;
 }
@@ -17,7 +17,7 @@ export async function createUser(payload: UserPayload): Promise<UserRespond> {
 }
 
 export async function updateUser(
-  id: number,
+  id: string,
   payload: UserPayload,
 ): Promise<UserRespond> {
   const { data } = await apiClient.put<UserRespond>(
@@ -27,6 +27,6 @@ export async function updateUser(
   return data;
 }
 
-export async function deleteUser(id: number): Promise<void> {
+export async function deleteUser(id: string): Promise<void> {
   await apiClient.delete(`/api/users/${id}`);
 }
